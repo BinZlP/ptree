@@ -5,7 +5,7 @@
 int main(void){
   int ret;
   struct prinfo* buf;
-  int nr=50;
+  int nr=200;
   buf = (struct prinfo*)malloc(sizeof(struct prinfo)*nr);
   ret = syscall(548, buf, &nr);
 

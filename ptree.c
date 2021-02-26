@@ -68,7 +68,7 @@ SYSCALL_DEFINE2(ptree, struct prinfo*, buf, int*, nr){
         struct task_struct *entry;
         struct prinfo tmplt = {0,};
         struct list_head *ptr = &(root->children);
-        printk("ptree: traversing %s\n",root->comm);
+        // printk("ptree: traversing %s\n",root->comm);
         if(list_empty(ptr)) return;
 
         // Iterate all entries of list & save it to the buffer
@@ -82,29 +82,18 @@ SYSCALL_DEFINE2(ptree, struct prinfo*, buf, int*, nr){
                 tmplt.next_sibling_pid = list_entry(ptr->next, struct task_struct, sibling)->pid;
             else
                 tmplt.next_sibling_pid = 0;
-
-            printk("%s,%d,%lld,%d,%d,%d,%lld\n", tmplt.comm, tmplt.pid, tmplt.state,
-                tmplt.parent_pid, tmplt.first_child_pid, tmplt.next_sibling_pid, tmplt.uid);
             
             memcpy(tbuf+num_of_entries++, &tmplt, sizeof(struct prinfo));
-            printk("ptree: recorded prinfo to buffer. num_of_entries: %d\n",num_of_entries);
+            // printk("ptree: recorded prinfo to buffer. num_of_entries: %d\n",num_of_entries);
             traverse_process(entry, depth+1);
         }
     }
 
     fill_prinfo(&tpr, rt, 0);
     memcpy(tbuf+num_of_entries++, &tpr, sizeof(struct prinfo));
-    printk("ptree: traverse start\n");
+    // printk("ptree: traverse start\n");
     traverse_process(rt, 1);
-    printk("ptree: traverse complete\n");
-
-    int i;
-    struct prinfo pr_i;
-    for(i=0;i<num_of_entries;i++){
-        pr_i = tbuf[i];
-        printk("%s,%d,%lld,%d,%d,%d,%lld\n", pr_i.comm, pr_i.pid, pr_i.state,
-            pr_i.parent_pid, pr_i.first_child_pid, pr_i.next_sibling_pid, pr_i.uid);
-    }
+    printk("ptree: traverse complete. num_of_entries=%d\n", num_of_entries);
 
     // Copy entries & update nr of user space
     if(num_read!=num_of_entries) copy_to_user(nr, &num_of_entries, sizeof(int));
