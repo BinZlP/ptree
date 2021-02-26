@@ -93,7 +93,9 @@ SYSCALL_DEFINE2(ptree, struct prinfo*, buf, int*, nr){
     tpr.next_sibling_pid = 0;
     memcpy(tbuf+num_of_entries++, &tpr, sizeof(struct prinfo));
     // printk("ptree: traverse start\n");
+    read_lock(&tasklist_lock);
     traverse_process(rt, 1);
+    read_unlock(&tasklist_lock);
     printk("ptree: traverse complete. num_of_entries=%d\n", num_of_entries);
 
     // Copy entries & update nr of user space
