@@ -90,6 +90,7 @@ SYSCALL_DEFINE2(ptree, struct prinfo*, buf, int*, nr){
     }
 
     fill_prinfo(&tpr, rt, 0);
+    tpr.next_sibling_pid = 0;
     memcpy(tbuf+num_of_entries++, &tpr, sizeof(struct prinfo));
     // printk("ptree: traverse start\n");
     traverse_process(rt, 1);
